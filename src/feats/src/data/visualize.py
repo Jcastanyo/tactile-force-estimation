@@ -16,30 +16,20 @@ from data.dataloader import FEATSDataset, normalize, unnormalize
 from models.unet import UNet
 
 
-def plot_orig_img(data):
+def plot_img(img, loc, w_name):
     """
-    Plot the original image.
+    Plot the image.
 
-    :param data: dictionary containing the data
+    :param img: image to plot
+    :param loc: location of the window
     :return: None
     """
-    img = cv2.cvtColor(data['gs_img'].numpy().squeeze(0), cv2.COLOR_BGR2RGB)
+
+    img = cv2.cvtColor(img.numpy().squeeze(0), cv2.COLOR_BGR2RGB)
     img = cv2.resize(img, (320, 240))
-    cv2.imshow("GelSight Mini", cv2.resize(img, (int(320*1.5), int(240*1.5))))
-    cv2.moveWindow("GelSight Mini", 1320, 200)
+    cv2.imshow(w_name, cv2.resize(img, (int(320*1.5), int(240*1.5))))
+    cv2.moveWindow(w_name, loc[0], loc[1])
 
-
-def plot_no_mark_img(data):
-    """
-    Plot the image without markers.
-
-    :param data: dictionary containing the data
-    :return: None
-    """
-    img = cv2.cvtColor(data['gs_img_no_mark'].numpy().squeeze(0), cv2.COLOR_BGR2RGB)
-    img = cv2.resize(img, (320, 240))
-    cv2.imshow("GelSight Mini No Mark", cv2.resize(img, (int(320*1.5), int(240*1.5))))
-    cv2.moveWindow("GelSight Mini No Mark", 1320, 600)
 
 
 def plot_force_map_lbl(data):
@@ -121,6 +111,7 @@ def plot_force_map_lbl(data):
     grid[1].set_ylabel("Prediction", fontsize=12)
 
 
+
 def main(config):
     """
     Main function for visualization of the UNet. This function loads the model,
@@ -147,7 +138,7 @@ def main(config):
         rows, cols = 240, 320
         M = np.float32([[1, 0, calibration[0]], [0, 1, calibration[1]]])
 
-    for i, data in enumerate(val_loader):
+    for i, data in enumerate(test_loader):
             
         # prepare input data
         if config["calibration_file"] is not None:
@@ -158,8 +149,11 @@ def main(config):
             inputs = data["gs_img"].permute(0, 3, 1, 2)
 
         # show image and make it bigger
-        plot_orig_img(data)
-        plot_no_mark_img(data)
+        plot_img(data["gs_img"], (1320, 0), "GelSight Mini")
+        plot_img(data["gs_img_no_mark_rec"], (1320, 400), "GM No Mark Rec")
+        plot_img(data["dm_img"], (1320, 600), "DM")
+        plot_img(data["gs_img_no_mark_rec_diff"], (1320, 800), "GM No Mark Rec Diff")
+
         plot_force_map_lbl(data)
 
         # show plot and close it after key press

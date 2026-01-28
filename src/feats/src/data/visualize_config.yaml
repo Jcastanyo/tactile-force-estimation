@@ -1,6 +1,7 @@
-train_data: ../../data/dataset/train/
-val_data: ../../data/dataset/val/
-test_data: ../../data/dataset/test/
+train_data: ../../data/dataset/final_data/train_final/
+val_data: ../../data/dataset/final_data/val_final/
+test_data: ../../data/dataset/final_data/test_final/
+
 norm_file: ../../data/normalization_08042025_122519.npy
 model: ../../models/unet_09042025_124903_80.pt
 calibration_file: null

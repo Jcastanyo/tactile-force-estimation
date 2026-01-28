@@ -27,7 +27,13 @@ def normalize(data, norm_file):
         if key == "gs_img":
             # normalize data
             data[key] = data[key] / 255
-        elif key == "gs_img_no_mark":
+        elif key == "gs_img_no_mark_rec":
+            # normalize data
+            data[key] = data[key] / 255
+        elif key == "gs_img_no_mark_rec_diff":
+            # normalize data
+            data[key] = data[key] / 255
+        elif key == "dm_img":
             # normalize data
             data[key] = data[key] / 255
         elif key == "grid_x" or key == "grid_y" or key == "f_x" or key == "f_y":
@@ -64,7 +70,13 @@ def unnormalize(data, key, norm_file):
     if key == "gs_img":
         # undo normalization
         data = data * 255
-    elif key == "gs_img_no_mark":
+    elif key == "gs_img_no_mark_rec":
+        # undo normalization
+        data = data * 255
+    elif key == "gs_img_no_mark_rec_diff":
+        # undo normalization
+        data = data * 255
+    elif key == "dm_img":
         # undo normalization
         data = data * 255
     elif key == "grid_x" or key == "grid_y" or key == "f_x" or key == "f_y":
@@ -157,18 +169,27 @@ class FEATSDataset(Dataset):
             # augment every fifth sample
             if idx % 5 == 0:
                 gs_img = augment(torch.from_numpy(data["gs_img"]).float())
-                gs_img_no_mark = augment(torch.from_numpy(data["gs_img_no_mark"]).float())
+                gs_img_no_mark_rec = augment(torch.from_numpy(data["gs_img_no_mark_rec"]).float())
+                dm_img = torch.from_numpy(data["dm_img"]).float()
+                gs_img_no_mark_rec_diff = torch.from_numpy(data["gs_img_no_mark_rec_diff"]).float()
             else:
                 gs_img = torch.from_numpy(data["gs_img"]).float()
-                gs_img_no_mark = torch.from_numpy(data["gs_img_no_mark"]).float()
+                gs_img_no_mark_rec = torch.from_numpy(data["gs_img_no_mark_rec"]).float()
+                dm_img = torch.from_numpy(data["dm_img"]).float()
+                gs_img_no_mark_rec_diff = torch.from_numpy(data["gs_img_no_mark_rec_diff"]).float()
         else:
             gs_img = torch.from_numpy(data["gs_img"]).float()
-            gs_img_no_mark = torch.from_numpy(data["gs_img_no_mark"]).float()
+            gs_img_no_mark_rec = torch.from_numpy(data["gs_img_no_mark_rec"]).float()
+            dm_img = torch.from_numpy(data["dm_img"]).float()
+            gs_img_no_mark_rec_diff = torch.from_numpy(data["gs_img_no_mark_rec_diff"]).float()
+            
 
         # create sample
         sample = {
             "gs_img": gs_img,
-            "gs_img_no_mark": gs_img_no_mark,
+            "gs_img_no_mark_rec": gs_img_no_mark_rec,
+            "dm_img": dm_img,
+            "gs_img_no_mark_rec_diff": gs_img_no_mark_rec_diff,
             "grid": torch.stack((torch.from_numpy(data["grid_x"]).float(), torch.from_numpy(data["grid_y"]).float(), torch.from_numpy(data["grid_z"]).float()), 2),
             "total_force": torch.stack((torch.from_numpy(np.array(data["f_x"])).float(), torch.from_numpy(np.array(data["f_y"])).float(), torch.from_numpy(np.array(data["f_z"])).float()), 0),
             "filename": self.files[idx]
